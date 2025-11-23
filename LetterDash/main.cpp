@@ -190,8 +190,15 @@ void wordInput(string& word) {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "> ";
 
-            getline(cin, word);
+            HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+            DWORD mode = 0;
 
+            GetConsoleMode(hStdin, &mode);
+            GetConsoleMode(hStdin, mode & ~ENABLE_ECHO_INPUT);
+
+            getline(cin, word);
+           
+            SetConsoleMode(hStdin, mode);
 
             if (word.empty()) throw runtime_error("The word must not be empty");
 
@@ -213,7 +220,7 @@ void wordInput(string& word) {
 void playGame(string& word){
     if(word.empty()){
         // cout << "\033[3J\033[H\033[2J";
-        system("clear");
+        system("cls");
         cout << "THE WORD MUST NOT BE EMPTY\n\n";
         return;
     }
@@ -246,7 +253,7 @@ void playGame(string& word){
   
        if(wordOutput.find('_') == string::npos){
         // cout << "\033[3J\033[H\033[2J";
-        system("clear");
+        system("cls");
         winner();
         cout << "\n";
         
@@ -257,7 +264,7 @@ void playGame(string& word){
         maxWrong++;
             if(maxWrong == 8){
                 // cout << "\033[3J\033[H\033[2J";
-                system("clear");
+                system("cls");
                 looser();
                 cout << hangmanStage[7];
                 return;   
@@ -308,7 +315,7 @@ int main() {
         switch (option) {
         case 1:
             wordInput(word);
-            system("clear");
+            system("cls");
             break;
 
         case 2:
