@@ -4,6 +4,17 @@
 
 using namespace std;
 
+//function that displays the menu
+void optionOutput(){
+    
+    cout << R"(Menu:
+    1: Add New Word
+    2: Play Game
+    0: Quit
+
+    You pick: )";
+}
+
 // "Enter a word" function
 void wordInput(string& word) {
     string bannedSymbols = "0123456789!@#$%^&*()_+-=<>?/\\|[]{},.;:'\" ";
