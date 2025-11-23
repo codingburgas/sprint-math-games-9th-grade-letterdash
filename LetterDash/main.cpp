@@ -91,9 +91,7 @@ vector<string> hangmanStage{
             |       |
             |      
             |
-            _____________#include <iostream>
-#include <string>
-#include <limits>
+            _____________
            /            /
           /            /
          /____________/
@@ -148,6 +146,7 @@ vector<string> hangmanStage{
 };
 
 
+
 //functions display if you won of lost with big ascii letters
 void winner(){
     cout << R"(                   _______                                                     _______
@@ -174,10 +173,11 @@ void looser(){
 }
 
 
-
-
-
-
+//clean input buffer
+void cleanCin(){
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+}
 
 // "Enter a word" function
 void wordInput(string& word) {
