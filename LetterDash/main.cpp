@@ -34,6 +34,74 @@ void wordInput(string& word) {
     }
 }
 
+//Function to start playing 
+void playGame(string& word){
+    if(word.empty()){
+        // cout << "\033[3J\033[H\033[2J";
+        system("clear");
+        cout << "THE WORD MUST NOT BE EMPTY\n\n";
+        return;
+    }
+    char charToGuess;
+    vector<char> foundChars;
+    int maxWrong = 0;
+    string wordOutput(word.size(), '_');
+
+    while (true) {
+       cout << "Take a guess!\n>";
+       bool found = false;
+        
+
+       cin >> charToGuess;
+       cleanCin();  
+       
+       for(size_t i = 0; i < word.size();i++){
+       
+        if(word[i] =='0') continue;
+
+
+        if(word[i] == charToGuess ){
+            found = true;
+            wordOutput[i] = charToGuess;
+            word[i] = '0';
+
+            foundChars.push_back(charToGuess);
+        }
+       }
+  
+       if(wordOutput.find('_') == string::npos){
+        // cout << "\033[3J\033[H\033[2J";
+        system("clear");
+        winner();
+        cout << "\n";
+        
+        return;      
+       }
+
+       if(!found){
+        maxWrong++;
+            if(maxWrong == 8){
+                // cout << "\033[3J\033[H\033[2J";
+                system("clear");
+                looser();
+                cout << hangmanStage[7];
+                return;   
+            }   
+        cout << hangmanStage[maxWrong-1];
+        cout << "There is no \'" << charToGuess << "\' in the word" << endl;
+       }
+       
+       for(size_t i = 0; i < wordOutput.size();i++ )
+       {
+        cout << wordOutput[i];
+       }
+       
+       
+
+       found = false;
+       cout << "\n";
+    }
+}
 
 int main() {
     string word;
