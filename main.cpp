@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <limits>
 
 using namespace std;
 
@@ -62,6 +63,8 @@ int main(){
 
     switch (option) {
         case 1:
+            wordInput(word);
+            system("clear");
             break;
 
         case 2:
