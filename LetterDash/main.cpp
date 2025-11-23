@@ -308,18 +308,19 @@ int main() {
             You pick: )";
 
     int option;
-    while (true) {
+    while (true) {   
 
-        cin >> option;
+    cin >> option;
 
-        switch (option) {
+    switch (option) {
         case 1:
             wordInput(word);
-            system("cls");
+            system("clear");
             break;
 
         case 2:
-
+            playGame(word);
+            
             word = "";
             break;
 
@@ -329,8 +330,9 @@ int main() {
         default:
             cout << "Invalid option\n";
             break;
-
-        }
+        
     }
+    optionOutput();
+}
     return 0;
 }
