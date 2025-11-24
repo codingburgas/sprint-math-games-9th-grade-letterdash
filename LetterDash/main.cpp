@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <exception>
-#define NOMINMAX
+
 #include <windows.h>
 #include <cstdlib>
 #include <limits>
@@ -12,15 +12,14 @@ using namespace std;
 
 //function that displays the menu
 void optionOutput(){
-    
-    cout << R"(Menu:
-    1: Add New Word
-    2: Play Game
-    0: Quit
-
-    You pick: )";
+    cout << "\n====================\n";
+    cout << "        MENU        \n";
+    cout << "====================\n";
+    cout << "1: Add New Word\n";
+    cout << "2: Play Game\n";
+    cout << "0: Quit\n";
+    cout << "Your choice: ";
 }
-
 
 //hangman stages
 vector<string> hangmanStage{
@@ -150,6 +149,7 @@ vector<string> hangmanStage{
 
 //functions display if you won of lost with big ascii letters
 void winner(){
+    cout << "\n🎉 CONGRATULATIONS! YOU WON! 🎉\n\n";
     cout << R"(                   _______                                                     _______
         \     /   |       |    |       |          \          /\          /    |       |     |\     |
          \   /    |       |    |       |           \        /  \        /     |       |     | \    |
@@ -162,6 +162,7 @@ void winner(){
 }
 
 void looser(){
+    cout << "\n💀 GAME OVER! YOU LOST! 💀\n\n";
     cout << R"(                   _______                                     ________      _______     ____________              
         \     /   |       |    |       |          |           |        |     |                 |
          \   /    |       |    |       |          |           |        |     |                 |
@@ -177,147 +178,144 @@ void looser(){
 //clean input buffer
 void cleanCin(){
     cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 // "Enter a word" function
 void wordInput(string& word) {
     string bannedSymbols = "0123456789!@#$%^&*()_+-=<>?/\\|[]{},.;:'\" ";
+    word.clear();
 
-    cout << "The word must not contain numeric characters, symbols, or spaces\n";
-    cout << "Enter a word: ";
-    while (true) {
-        try {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "> ";
-            
-            char inputChar;
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD originalMode;
+    GetConsoleMode(hStdin, &originalMode);
 
-            HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-            DWORD mode = 0;
+    // Disable echo input (don't disable line input)
+    SetConsoleMode(hStdin, originalMode & ~ENABLE_ECHO_INPUT);
 
-            GetConsoleMode(hStdin, &mode);
-            SetConsoleMode(hStdin, mode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT));
+    cout << "The word must not contain numbers, symbols, or spaces\n> ";
 
-            INPUT_RECORD record;
-            DWORD events;
+    try {
+        INPUT_RECORD record;
+        DWORD events;
+        char ch;
 
-            while (true) {
+        while (true) {
+            ReadConsoleInput(hStdin, &record, 1, &events);
 
-                ReadConsoleInput(hStdin, &record, 1, &events);
+            if (record.EventType == KEY_EVENT && record.Event.KeyEvent.bKeyDown) {
+                ch = record.Event.KeyEvent.uChar.AsciiChar;
 
-                // process the key event
-                if (record.EventType == KEY_EVENT && record.Event.KeyEvent.bKeyDown) {
-                    char ch = record.Event.KeyEvent.uChar.AsciiChar;
-
-                    // break if Enter is pressed
-                    if (ch == '\r') {  
-                        std::cout << std::endl;
-                        break;
-                    }
-
-                    //erase *
-                    if (ch == '\b') {  
-                        if (!word.empty()) {
-                            word.pop_back();
-                            std::cout << "\b \b"; 
-                        }
-                    } else if (ch >= 32) { 
-                        word.push_back(ch);
-                        std::cout << '*';
-                    }
-                    }
-            }
-
-            //to set console mode back to normal
-            SetConsoleMode(hStdin, mode);
-
-            if (word.empty()) throw runtime_error("The word must not be empty");
-
-            for (size_t i = 0; i < word.size(); i++) {
-                if (bannedSymbols.find(word[i]) != string::npos) {
-                    throw std::runtime_error("The word must not contain numeric characters, symbols, or spaces");
+                if (ch == '\r') {  // Enter
+                    cout << endl;
+                    break;
                 }
-
+                if (ch == '\b') {  // Backspace
+                    if (!word.empty()) {
+                        word.pop_back();
+                        cout << "\b \b";
+                    }
+                } else if (isalpha(ch)) { // accept only letters
+                    word.push_back(ch);
+                    cout << '*';
+                }
             }
-            break;
         }
-        catch (const exception& e) {
-            cout << e.what() << "\n";
-        }
-    }
-}
 
+        if (word.empty()) {
+            throw runtime_error(u8"⚠️  You didn’t type anything!");
+        }
+
+        // Validate banned symbols just in case
+        for (char c : word) {
+            if (bannedSymbols.find(c) != string::npos) {
+                throw runtime_error(u8"🚫 Invalid word! Only letters allowed!");
+            }
+        }
+
+    } catch (const exception& e) {
+        cout << e.what() << "\n";
+        word.clear();
+        wordInput(word); // retry
+    }
+
+    // ✅ Restore console mode even if exception occurred
+    SetConsoleMode(hStdin, originalMode);
+}
 //Function to start playing 
 void playGame(string& word){
-    if(word.empty()){
-        // cout << "\033[3J\033[H\033[2J";
-        system("cls");
-        cout << "THE WORD MUST NOT BE EMPTY\n\n";
-        return;
-    }
+    SetConsoleOutputCP(CP_UTF8);
+
     char charToGuess;
-    vector<char> foundChars;
+    string foundChars;    
     int maxWrong = 0;
     string wordOutput(word.size(), '_');
 
     while (true) {
-       cout << "Take a guess!\n>";
-       bool found = false;
-        
-
-       cin >> charToGuess;
-       cleanCin();  
-       
-       for(size_t i = 0; i < word.size();i++){
-       
-        if(word[i] =='0') continue;
-
-
-        if(word[i] == charToGuess ){
-            found = true;
-            wordOutput[i] = charToGuess;
-            word[i] = '0';
-
-            foundChars.push_back(charToGuess);
-        }
-       }
-  
-       if(wordOutput.find('_') == string::npos){
-        // cout << "\033[3J\033[H\033[2J";
         system("cls");
-        winner();
-        cout << "\n";
-        
-        return;      
-       }
 
-       if(!found){
-        maxWrong++;
+        cout << hangmanStage[maxWrong] << "\n";
+        cout << "Word: ";
+        for (char c : wordOutput) cout << c << " ";
+        cout << "\nGuessed letters: ";
+        for (char c : foundChars) cout << c << " ";
+        cout << "\nTake a guess: ";
+
+        bool found = false;
+        cin >> charToGuess;
+
+        if(foundChars.find(charToGuess) != string::npos){
+            cout << u8"⚠️  You already tried '" << charToGuess << "'!\n";  
+            cleanCin();
+            continue;
+        }
+
+        cleanCin();
+        foundChars.push_back(charToGuess);
+
+        for(size_t i = 0; i < word.size(); i++){
+            if(word[i] =='0') continue;
+
+            if(word[i] == charToGuess ){
+                found = true;
+                cout << u8"✅ Correct! '" << charToGuess << "' is in the word!\n";
+                wordOutput[i] = charToGuess;
+                word[i] = '0';
+                system("pause");
+            }
+        }
+
+        //if there is no more underscores, the player has won
+        if(wordOutput.find('_') == string::npos){
+            system("cls");
+            winner();
+            // cout << "Word was: " << wordOutput << "\n";
+            return;      
+        }
+
+        if(!found){
+            maxWrong++;
+            cout << u8"❌ Wrong! '" << charToGuess << "' is not in the word!\n";    
+            cout << u8"💀 You have " << 8 - maxWrong << " attempts left!\n";
+            system("pause");
+            //if the player has reached max wrong attempts, they lose
             if(maxWrong == 8){
-                // cout << "\033[3J\033[H\033[2J";
                 system("cls");
                 looser();
                 cout << hangmanStage[7];
+                cout << "Word was: " << wordOutput << "\n";
                 return;   
-            }   
-        cout << hangmanStage[maxWrong-1];
-        cout << "There is no '\'" << charToGuess << "\' in the word" << endl;
+            }
        }
-       
-       for(size_t i = 0; i < wordOutput.size();i++ )
-       {
-        cout << wordOutput[i];
-       }
-       
-       
-
        found = false;
-       cout << "\n";
     }
+
 }
 
 int main() {
+
+    SetConsoleOutputCP(CP_UTF8);
+
     string word;
 
     cout << R"(
@@ -332,27 +330,32 @@ int main() {
            /            /
           /            /
          /____________/
-            Menu:
-            1: Add New Word
-            2: Play Game
-            0: Quit
+        
+    
+         
+         ====================     
+                MENU
+         ====================
+        1: Add New Word
+        2: Play Game
+        0: Quit
 
-            You pick: )";
+        Your choice:  )";
 
     int option;
-    while (true) {   
-
+    while (true) {
     cin >> option;
+    cleanCin(); 
 
     switch (option) {
         case 1:
             wordInput(word);
-            system("clear");
+            // restore console mode after hidden input
+            system("cls");
             break;
 
         case 2:
             playGame(word);
-            
             word = "";
             break;
 
@@ -362,9 +365,8 @@ int main() {
         default:
             cout << "Invalid option\n";
             break;
-        
     }
     optionOutput();
-}
+    }
     return 0;
 }
