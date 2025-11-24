@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <exception>
+#define NOMINMAX
 #include <windows.h>
 #include <cstdlib>
 #include <limits>
@@ -301,7 +302,7 @@ void playGame(string& word){
                 return;   
             }   
         cout << hangmanStage[maxWrong-1];
-        cout << "There is no \'" << charToGuess << "\' in the word" << endl;
+        cout << "There is no '\'" << charToGuess << "\' in the word" << endl;
        }
        
        for(size_t i = 0; i < wordOutput.size();i++ )
