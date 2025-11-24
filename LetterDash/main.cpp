@@ -194,7 +194,7 @@ void wordInput(string& word) {
             DWORD mode = 0;
 
             GetConsoleMode(hStdin, &mode);
-            GetConsoleMode(hStdin, mode & ~ENABLE_ECHO_INPUT);
+            SetConsoleMode(hStdin, mode & ~ENABLE_ECHO_INPUT);
 
             getline(cin, word);
            
