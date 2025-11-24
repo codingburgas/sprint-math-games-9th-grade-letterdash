@@ -189,15 +189,46 @@ void wordInput(string& word) {
         try {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "> ";
+            
+            char inputChar;
 
             HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
             DWORD mode = 0;
 
             GetConsoleMode(hStdin, &mode);
-            SetConsoleMode(hStdin, mode & ~ENABLE_ECHO_INPUT);
+            SetConsoleMode(hStdin, mode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT));
 
-            getline(cin, word);
-           
+            INPUT_RECORD record;
+            DWORD events;
+
+            while (true) {
+
+                ReadConsoleInput(hStdin, &record, 1, &events);
+
+                // process the key event
+                if (record.EventType == KEY_EVENT && record.Event.KeyEvent.bKeyDown) {
+                    char ch = record.Event.KeyEvent.uChar.AsciiChar;
+
+                    // break if Enter is pressed
+                    if (ch == '\r') {  
+                        std::cout << std::endl;
+                        break;
+                    }
+
+                    //erase *
+                    if (ch == '\b') {  
+                        if (!word.empty()) {
+                            word.pop_back();
+                            std::cout << "\b \b"; 
+                        }
+                    } else if (ch >= 32) { 
+                        word.push_back(ch);
+                        std::cout << '*';
+                    }
+                    }
+            }
+
+            //to set console mode back to normal
             SetConsoleMode(hStdin, mode);
 
             if (word.empty()) throw runtime_error("The word must not be empty");
