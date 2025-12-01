@@ -1,4 +1,4 @@
-#include <vector>
+
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -22,7 +22,7 @@ void optionOutput(){
 }
 
 //hangman stages
-vector<string> hangmanStage{
+<string> hangmanStage{
     R"(
          _________________
             |/      |    
