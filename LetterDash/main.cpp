@@ -1,14 +1,40 @@
+#include <cstdio>
 #include <iostream>
 #include <string>
 #include <cctype>
-#define NOMINMAX
-#include <windows.h>
+#include <limits>
 #include <cstdlib>
 #include <ctime>
-#include <limits>
+
+#define NOMINMAX
+#include <windows.h>
+
 
 using namespace std;
 
+//declarations of all functions
+
+
+//clean input buffer
+void cleanCin();
+
+//prints options
+void optionOutput();
+
+//prints you won
+void winner();
+
+//prints you lost
+void looser();
+
+//word input for multyplayer
+void wordInput(string& word);
+
+//the logic of game
+void playGame(string& word);
+
+
+//FUNCTION DESCRIPTION
 // clean input buffer
 void cleanCin(){
     cin.clear();
@@ -156,7 +182,8 @@ void looser(){
            |      |       |    |       |          |           |        |            |          |
            |      |       |    |       |          |           |        |            |          |
            |      |_______|    |_______|          |_______    |________|      ______|          |
- 
+ void wordInput(string& word) {
+
     )";
 }
 
@@ -226,7 +253,7 @@ void wordInput(string& word) {
 //Function to start playing 
 void playGame(string& word){
     SetConsoleOutputCP(CP_UTF8);
-
+    char toEnter;
     char charToGuess;
     string foundChars;
     int maxWrong = 0;
@@ -262,7 +289,7 @@ void playGame(string& word){
                 cout << " Correct! '" << charToGuess << "' is in the word!\n";
                 wordOutput[i] = charToGuess;
                 word[i] = '0';
-                system("pause");
+                toEnter = getchar();
             }
         }
 
@@ -277,7 +304,7 @@ void playGame(string& word){
             maxWrong++;
             cout << " Wrong! '" << charToGuess << "' is not in the word!\n";
             cout << " You have " << 8 - maxWrong << " attempts left!\n";
-            system("pause");
+            toEnter = getchar();
             //if the player has reached max wrong attempts, they lose
             if(maxWrong == 8){
                 system("cls");
@@ -341,21 +368,21 @@ int main() {
     cout << "0: Quit\n";
     cout << "Your choice: ";
 
-    int option;
+    char option;
     while (true) {
-        cin >> option;
+        option = getchar();
         cleanCin();
 
         switch (option) {
-            case 1:
+            case '1':
                 singlePlayer(word);
                 break;
 
-            case 2:
+            case '2':
                 multiPlayer(word);
                 break;
 
-            case 0:
+            case '0':
                 return 0;
 
             default:
