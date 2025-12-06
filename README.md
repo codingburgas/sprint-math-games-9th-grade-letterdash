@@ -36,18 +36,22 @@ https://github.com/codingburgas/sprint-math-games-9th-grade-letterdash.git
 *(Add your images in the placeholders below — for example: `![tech name](path/to/image.png)`)*
 
 ### 🖥️ Development Tools  
+
 - **g++ Compiler (MinGW)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/g++.png" width="60">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/g++.png" width="60">
 
 - **Visual Studio 2022**  
- &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<img src="assets/vs2022.png" width="50">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/vs2022.png" width="50">
   
 - **Visual Studio Code**  
-<img src="assets/vscode-removebg-preview.png" width="120">
+  <img src="assets/vscode-removebg-preview.png" width="120">
+
 - **Git**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/git.png" width="60">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/git.png" width="60">
+
 - **GitHub**  
-&nbsp;&nbsp;&nbsp;<img src="assets/github.png" width="100">
+  &nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/github.png" width="100">
+
 
 ### 📚 Productivity & Communication  
 - **Microsoft Teams**  
