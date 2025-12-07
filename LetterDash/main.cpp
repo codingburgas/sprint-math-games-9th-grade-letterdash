@@ -338,8 +338,8 @@ void playGame(string& word) {
 //  Single Player 
 void singlePlayer(string& word) {
 	const char* words[] = { "cat", "dog", "bird", "seal", "monkey", "butterfly", "jellyfish", "apple", "summer", "window", "garden", "music", "computer",
-	"programming", "elephant", "football", "library", "pyramid", "yellow", "pencil", "river", "mountain", "chocolate", "airplane", " rainbow", " telescope", 
-    " volcano", " astronaut", " dinosaur", " submarine", "chicken" };
+	"programming", "elephant", "football", "library", "pyramid", "yellow", "pencil", "river", "mountain", "chocolate", "airplane", "rainbow", "telescope", 
+    "volcano", "astronaut", "dinosaur", "submarine", "chicken" };
     const int count = sizeof(words) / sizeof(words[0]);
     int idx = rand() % count;
     string selected = words[idx];
