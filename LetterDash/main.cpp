@@ -11,14 +11,27 @@
 
 using namespace std;
 
-//clean input buffer
-void cleanCin(){
+// Function declarations
+void cleanCin();
+void optionOutput();
+void winner();
+void looser();
+void wordInput(string& word);
+void playGame(string& word);
+int chooseLevel();
+bool timeIsUp(DWORD start, int limitSec);
+void singlePlayer(string& word);
+void multiPlayer();
+void multiplayerMenu();
+
+// Clean input 
+void cleanCin() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-//function that displays the menu
-void optionOutput(){
+// Menu output
+void optionOutput() {
     cout << "\n====================\n";
     cout << "        MENU        \n";
     cout << "====================\n";
@@ -28,9 +41,7 @@ void optionOutput(){
     cout << "Your choice: ";
 }
 
-//=======================
-// NEW: Difficulty choice
-//=======================
+// Difficulty & Timer 
 int chooseLevel() {
     cout << "\nChoose difficulty:\n";
     cout << "1. Easy (10 attempts)\n";
@@ -42,23 +53,19 @@ int chooseLevel() {
     cin >> c;
     cleanCin();
 
-    switch(c) {
-        case '1': return 10;
-        case '2': return 8;
-        case '3': return 6;
-        default: return 8;
+    switch (c) {
+    case '1': return 10;
+    case '3': return 6;
+    default:  return 8;
     }
 }
 
-//=======================
-// NEW: Simple 30s timer
-//=======================
-bool timeIsUp(DWORD start, int limitSeconds) {
+bool timeIsUp(DWORD start, int limitSec) {
     DWORD now = GetTickCount();
-    return (now - start) / 1000 >= limitSeconds;
+    return (now - start) / 1000 >= limitSec;
 }
 
-//hangman stages
+//  Hangman stages 
 const char* hangmanStage[] = {
     R"(
          _________________
@@ -166,22 +173,24 @@ const char* hangmanStage[] = {
     )"
 };
 
-void winner(){
+//  Winner/Looser 
+void winner() {
     cout << "\n CONGRATULATIONS! YOU WON! \n\n";
-    cout << R"(                   _______                                                     _______
-        \     /   |       |    |       |          \          /\          /    |       |     |\     |
-         \   /    |       |    |       |           \        /  \        /     |       |     | \    |
-          \ /     |       |    |       |            \      /    \      /      |       |     |  \   |
-           |      |       |    |       |             \    /      \    /       |       |     |   \  |
-           |      |       |    |       |              \  /        \  /        |       |     |    \ |
-           |      |_______|    |_______|               \/          \/         |_______|     |     \|
-    )";
+    cout << R"(                   
+           _______                                                     _______
+\     /   |       |    |       |          \          /\          /    |       |     |\     |
+ \   /    |       |    |       |           \        /  \        /     |       |     | \    |
+  \ /     |       |    |       |            \      /    \      /      |       |     |  \   |
+   |      |       |    |       |             \    /      \    /       |       |     |   \  |
+   |      |       |    |       |              \  /        \  /        |       |     |    \ |
+   |      |_______|    |_______|               \/          \/         |_______|     |     \|
+)";
 }
 
-void looser(){
+void looser() {
     cout << "\n GAME OVER! YOU LOST! \n\n";
     cout << R"(                   
-           _______                                     ________      _______     ____________              
+           _______                                     ________       _______     ___________             
 \     /   |       |    |       |          |           |        |     |                 |
  \   /    |       |    |       |          |           |        |     |                 |
   \ /     |       |    |       |          |           |        |     |______           |
@@ -191,6 +200,7 @@ void looser(){
 )";
 }
 
+// Word input 
 void wordInput(string& word) {
     const char* bannedSymbols = "0123456789!@#$%^&*()_+-=<>?/\\|[]{},.;:'\" ";
     word.clear();
@@ -222,7 +232,8 @@ void wordInput(string& word) {
                     word.pop_back();
                     cout << "\b \b";
                 }
-            } else if (isalpha((unsigned char)ch)) {
+            }
+            else if (isalpha((unsigned char)ch)) {
                 word.push_back(ch);
                 cout << '*';
             }
@@ -230,7 +241,7 @@ void wordInput(string& word) {
     }
 
     if (word.empty()) {
-        cout << "⚠  You didn’t type anything!\n";
+        cout << " You didn’t type anything!\n";
         wordInput(word);
     }
 
@@ -250,35 +261,32 @@ void wordInput(string& word) {
     SetConsoleMode(hStdin, originalMode);
 }
 
-void playGame(string& word){
+//  Play game 
+void playGame(string& word) {
     SetConsoleOutputCP(CP_UTF8);
-    char toEnter;
+
+    int maxAttempts = chooseLevel();
+    DWORD startTimer = GetTickCount();
+    int timeLimitSec = 30;
+
     char charToGuess;
     string foundChars;
-
-    //===========================
-    // NEW: difficulty + timer
-    //===========================
-    int maxAttempts = chooseLevel();
-    DWORD timerStart = GetTickCount();
-    int timeLimit = 30;
-
     int maxWrong = 0;
     string wordOutput(word.size(), '_');
 
     while (true) {
 
-        // CHECK TIMER
-        if (timeIsUp(timerStart, timeLimit)) {
-            cout << "\n\n⏰ TIME IS UP!\n";
+        if (timeIsUp(startTimer, timeLimitSec)) {
+            system("cls");
+            cout << "\  TIME IS UP!\n";
             looser();
             return;
         }
 
         system("cls");
-
         cout << hangmanStage[min(maxWrong, 7)] << "\n";
-        cout << "Time left: " << timeLimit - (int)((GetTickCount() - timerStart)/1000) << "s\n";
+        cout << "Time left: " << timeLimitSec - ((GetTickCount() - startTimer) / 1000) << "s\n";
+        cout << "Attempts left: " << (maxAttempts - maxWrong) << "\n";
 
         cout << "Word: ";
         for (size_t i = 0; i < wordOutput.size(); ++i) cout << wordOutput[i] << " ";
@@ -288,72 +296,125 @@ void playGame(string& word){
 
         bool found = false;
         cin >> charToGuess;
+        cleanCin();
 
-        if(foundChars.find(charToGuess) != string::npos){
+        if (foundChars.find(charToGuess) != string::npos) {
             cout << " You already tried '" << charToGuess << "'!\n";
-            cleanCin();
+            getchar();
             continue;
         }
 
-        cleanCin();
         foundChars.push_back(charToGuess);
 
-        for(size_t i = 0; i < word.size(); i++){
-            if(word[i] =='0') continue;
+        for (size_t i = 0; i < word.size(); i++) {
+            if (word[i] == '0') continue;
 
-            if(word[i] == charToGuess ){
+            if (word[i] == charToGuess) {
                 found = true;
                 wordOutput[i] = charToGuess;
                 word[i] = '0';
             }
         }
 
-        if(wordOutput.find('_') == string::npos){
+        if (wordOutput.find('_') == string::npos) {
             system("cls");
             winner();
             return;
         }
 
-        if(!found){
+        if (!found) {
             maxWrong++;
-
-            cout << " Wrong! '" << charToGuess << "' is not in the word!\n";
-            cout << " Attempts left: " << maxAttempts - maxWrong << "\n";
-
-            if(maxWrong >= maxAttempts){
+            if (maxWrong >= maxAttempts) {
                 system("cls");
                 looser();
                 cout << hangmanStage[7];
-                cout << "Word was: " << wordOutput << "\n";
+                cout << "\nWord was: " << wordOutput << "\n";
                 return;
             }
         }
     }
 }
 
+//  Single Player 
 void singlePlayer(string& word) {
-    const char* words[] = {"cat", "dog", "bird", "seal", "monkey", "butterfly", "jellyfish"};
+    const char* words[] = { "cat", "dog", "bird", "seal", "monkey", "butterfly", "jellyfish" };
     const int count = sizeof(words) / sizeof(words[0]);
     int idx = rand() % count;
     string selected = words[idx];
     playGame(selected);
 }
 
-void multiPlayer(string& word) {
-    wordInput(word);
-    if (!word.empty()) {
-        system("cls");
-        playGame(word);
-        word.clear();
+//  Multiplayer Menu 
+void multiplayerMenu() {
+    string word1, word2;
+    int score1 = 0, score2 = 0;
+
+    while (true) {
+        cout << "\n====================\n";
+        cout << "   MULTIPLAYER MENU  \n";
+        cout << "====================\n";
+        cout << "1: One enters word, other guesses\n";
+        cout << "2: Two-player duel (take turns)\n";
+        cout << "0: Back to main menu\n";
+        cout << "Your choice: ";
+
+        char choice;
+        cin >> choice;
+        cleanCin();
+
+        switch (choice) {
+        case '1':
+            wordInput(word1);
+            if (!word1.empty()) {
+                system("cls");
+                playGame(word1);
+                word1.clear();
+            }
+            break;
+
+        case '2':
+            cout << "Player 1, enter your word:\n";
+            wordInput(word1);
+            cout << "Player 2, enter your word:\n";
+            wordInput(word2);
+
+            if (!word1.empty() && !word2.empty()) {
+                system("cls");
+                cout << "Player 2 guessing Player 1's word:\n";
+                playGame(word1);
+                score2++;
+
+                system("cls");
+                cout << "Player 1 guessing Player 2's word:\n";
+                playGame(word2);
+                score1++;
+
+                cout << "\nScores:\nPlayer 1: " << score1 << "\nPlayer 2: " << score2 << "\n";
+                cout << "Press enter to continue...\n";
+                getchar();
+            }
+            break;
+
+        case '0':
+            return;
+
+        default:
+            cout << "Invalid option\n";
+            break;
+        }
     }
 }
 
+//  Main Multiplayer 
+void multiPlayer() {
+    multiplayerMenu();
+}
+
+//  Main 
 int main() {
 
     SetConsoleOutputCP(CP_UTF8);
-
     srand((unsigned)time(NULL));
-
     string word;
 
     cout << R"(
@@ -364,11 +425,10 @@ int main() {
             |       |
             |      / \
             |
-            ________|_____
+            _____________
            /            /
           /            /
          /____________/
-        
     )";
 
     optionOutput();
@@ -379,20 +439,20 @@ int main() {
         cleanCin();
 
         switch (option) {
-            case '1':
-                singlePlayer(word);
-                break;
+        case '1':
+            singlePlayer(word);
+            break;
 
-            case '2':
-                multiPlayer(word);
-                break;
+        case '2':
+            multiPlayer();
+            break;
 
-            case '0':
-                return 0;
+        case '0':
+            return 0;
 
-            default:
-                cout << "Invalid option\n";
-                break;
+        default:
+            cout << "Invalid option\n";
+            break;
         }
         optionOutput();
     }
