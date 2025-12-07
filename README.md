@@ -23,17 +23,16 @@ https://github.com/codingburgas/sprint-math-games-9th-grade-letterdash.git
 
 | Role | Name | GitHub |
 |------|------|--------|
-| ⭐ **Scrum Trainer** | ** | *(GitHub link)* |
-| 🎨 **Frontend Developer** | *Member 2* | *(GitHub link)* |
-| 🛠 **Backend Developer** | *Member 3* | *(GitHub link)* |
-| 🧪 **Developer / QA** | *Member 4* | *(GitHub link)* |
+| ⭐ **Scrum Trainer** | *Vladimir Kosev 9G* | *https://github.com/vladosfluxi* |
+| 🎨 **Frontend Developer** | *Kristian Dinev 9B* | *https://github.com/JYStoykova24* |
+| 🛠 **Backend Developer** | *Juliana Stoykova 9V* | *https://github.com/KMDinev24* |
+| 🧪 **Developer / QA** | *Simona Subeva 9A* | *https://github.com/SDSubeva* |
 
-> Replace placeholder names and links with your team information.
 
 ---
 
 ## 🧰 Used Technologies  
-*(Add your images in the placeholders below — for example: `![tech name](path/to/image.png)`)*
+
 
 ### 🖥️ Development Tools  
 
